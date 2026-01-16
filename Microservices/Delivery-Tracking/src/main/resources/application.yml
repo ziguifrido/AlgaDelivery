@@ -20,5 +20,10 @@ spring:
           delivery-picked-up-event:com.algaworks.algadelivery.delivery.tracking.domain.event.DeliveryPickedUpEvent,
           delivery-fulfilled-event:com.algaworks.algadelivery.delivery.tracking.domain.event.DeliveryFulfilledEvent
 
-url:
-  courier-api: http://localhost:8081
+eureka:
+  client:
+    server-url:
+      default-zone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${random.value}
+    prefer-ip-address: true
