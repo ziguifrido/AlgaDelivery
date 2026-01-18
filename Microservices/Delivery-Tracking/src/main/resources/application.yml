@@ -20,5 +20,38 @@ spring:
           delivery-picked-up-event:com.algaworks.algadelivery.delivery.tracking.domain.event.DeliveryPickedUpEvent,
           delivery-fulfilled-event:com.algaworks.algadelivery.delivery.tracking.domain.event.DeliveryFulfilledEvent
 
-url:
-  courier-api: http://localhost:8081
+eureka:
+  client:
+    service-url:
+      default-zone: http://locahost:8761/eureka/
+  instance:
+    instance-id: ${random.value}
+    prefer-ip-address: true
+
+resilience4j:
+  retry:
+    configs:
+      default:
+        maxAttempts: 2
+        waitDuration: 20ms
+    instances:
+      Retry_CourierAPIClient_payoutCalculation:
+        baseConfig: default
+        maxAttempts: 3
+        retryExceptions:
+          - org.springframework.web.client.ResourceAccessException
+        ignoreExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10000
+    instances:
+      CircuitBreaker_CourierAPIClient_payoutCalculation:
+        baseConfig: default
+        waitDurationInOpenState: 5000
